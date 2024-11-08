@@ -302,63 +302,53 @@ public class ProjectManagementApp extends JFrame {
         Font buttonFont = new Font("Arial", Font.BOLD, 20);
         Color buttonColor = new Color(230, 230, 250);
 
-        JButton basicProjectButton = new JButton("Basic Project");
+        JButton basicProjectButton = new JButton("Software Development Project");
         basicProjectButton.setFont(buttonFont);
         basicProjectButton.setBackground(buttonColor);
         basicProjectButton.setFocusPainted(false);
-        basicProjectButton.setPreferredSize(new Dimension(200, 40));
-        basicProjectButton.addActionListener(e -> showTaskTable());
+        basicProjectButton.setPreferredSize(new Dimension(350, 40));
+        basicProjectButton.addActionListener(e -> SoftwareDevelopment());
         projectOptionsPanel.add(basicProjectButton, gbc);
 
         gbc.gridy++;
-        JButton teamProjectButton = new JButton("Team Project");
+        JButton teamProjectButton = new JButton("Marketing Campaign Project");
         teamProjectButton.setFont(buttonFont);
         teamProjectButton.setBackground(buttonColor);
         teamProjectButton.setFocusPainted(false);
         teamProjectButton.setPreferredSize(new Dimension(200, 40));
-        teamProjectButton.addActionListener(e -> showTeamProjectPanel());
+        teamProjectButton.addActionListener(e -> MarketingCampaign());
         projectOptionsPanel.add(teamProjectButton, gbc);
 
         gbc.gridy++;
-        JButton budgetProjectButton = new JButton("Budget Project");
+        JButton budgetProjectButton = new JButton("Research Project");
         budgetProjectButton.setFont(buttonFont);
         budgetProjectButton.setBackground(buttonColor);
         budgetProjectButton.setFocusPainted(false);
         budgetProjectButton.setPreferredSize(new Dimension(200, 40));
-        budgetProjectButton.addActionListener(e -> showBudgetProjectPanel());
+        budgetProjectButton.addActionListener(e -> ResearchProject());
         projectOptionsPanel.add(budgetProjectButton, gbc);
-
-        gbc.gridy++;
-        JButton createButton = new JButton("Create");
-        createButton.setFont(buttonFont);
-        createButton.setBackground(new Color(150, 150, 200));
-        createButton.setForeground(Color.WHITE);
-        createButton.setFocusPainted(false);
-        createButton.setPreferredSize(new Dimension(130, 50));
-        createButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Project Created"));
-        projectOptionsPanel.add(createButton, gbc);
 
         parentPanel.add(projectOptionsPanel);
         parentPanel.revalidate();
         parentPanel.repaint();
     }
 
-    private void showTaskTable() {
+    private void SoftwareDevelopment() {
         JPanel taskPanel = new JPanel(new BorderLayout());
         taskPanel.setBackground(new Color(245, 240, 255));
 
-        JLabel titleLabel = new JLabel("Basic Project");
+        JLabel titleLabel = new JLabel("Software Development Project");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setForeground(new Color(100, 50, 150));
         taskPanel.add(titleLabel, BorderLayout.NORTH);
 
-        String[] columns = {"Task Name", "Description", "Subtasks"};
+        String[] columns = {"Task Name", "Description", "Subtasks", "Task Phase"};
         DefaultTableModel model = new DefaultTableModel(columns, 0);
-        taskTable = new JTable(model);  // Only declare and initialize taskTable
+        taskTable = new JTable(model);
 
         taskTable.setRowSelectionAllowed(true);
-        taskTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  // Allow selecting only one row at a time
+        taskTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         taskTable.setFont(new Font("Arial", Font.PLAIN, 14));
         taskTable.setRowHeight(25);
@@ -370,6 +360,11 @@ public class ProjectManagementApp extends JFrame {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setBackground(new Color(245, 240, 255));
 
+        // Task Phase ComboBox
+        JComboBox<String> taskPhaseComboBox = new JComboBox<>(new String[]{"Planning", "Coding", "Testing", "Deploying"});
+        taskPhaseComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        buttonPanel.add(taskPhaseComboBox);
+
         JButton addTaskButton = new JButton("Add Task");
         addTaskButton.setFont(new Font("Arial", Font.PLAIN, 16));
         addTaskButton.setBackground(new Color(180, 160, 220));
@@ -377,10 +372,11 @@ public class ProjectManagementApp extends JFrame {
         addTaskButton.setFocusPainted(false);
         addTaskButton.setEnabled(true);
 
-        //Command pattern for adding Task
+        // Command pattern for adding Task
         addTaskButton.addActionListener(e -> {
+            String selectedPhase = (String) taskPhaseComboBox.getSelectedItem(); // Get selected task phase
             CommandInvoker commandInvoker = new CommandInvoker();
-            commandInvoker.setCommand(new AddTaskCommand(model, project));
+            commandInvoker.setCommand(new AddTaskCommand(model, project, selectedPhase));
             commandInvoker.executeCommand();
         });
 
@@ -391,7 +387,7 @@ public class ProjectManagementApp extends JFrame {
         addSubtaskButton.setFocusPainted(false);
         addSubtaskButton.setEnabled(true);
 
-        //Command pattern for adding subTask
+        // Command pattern for adding subTask
         addSubtaskButton.addActionListener(e -> {
             EventQueue.invokeLater(() -> {
                 int selectedRow = taskTable.getSelectedRow();
@@ -406,6 +402,33 @@ public class ProjectManagementApp extends JFrame {
                 }
             });
         });
+
+        // Adding "Add Member" feature
+        JPanel teamPanel = new JPanel(new BorderLayout());
+        teamPanel.setBackground(new Color(245, 240, 255));
+        teamPanel.setBorder(BorderFactory.createTitledBorder("Team Members"));
+
+        DefaultListModel<String> teamListModel = new DefaultListModel<>();
+        JList<String> teamList = new JList<>(teamListModel);
+        JScrollPane teamScrollPane = new JScrollPane(teamList);
+        teamPanel.add(teamScrollPane, BorderLayout.CENTER);
+
+        JButton addMemberButton = new JButton("Add Member");
+        addMemberButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        addMemberButton.setBackground(new Color(180, 160, 220));
+        addMemberButton.setForeground(Color.WHITE);
+        addMemberButton.setFocusPainted(false);
+
+        // Command pattern for adding member
+        addMemberButton.addActionListener(e -> {
+            CommandInvoker commandInvoker = new CommandInvoker();
+            AddMemberCommand addMemberCommand = new AddMemberCommand(teamListModel);
+            commandInvoker.setCommand(addMemberCommand);
+            commandInvoker.executeCommand();
+        });
+
+        teamPanel.add(addMemberButton, BorderLayout.SOUTH);
+        taskPanel.add(teamPanel, BorderLayout.WEST);  
 
         JButton backButton = new JButton("Back");
         backButton.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -423,11 +446,11 @@ public class ProjectManagementApp extends JFrame {
         cardLayout.show(mainPanel, "taskScreen");
     }
 
-    private void showTeamProjectPanel() {
+    private void MarketingCampaign() {
         JPanel teamProjectPanel = new JPanel(new BorderLayout());
         teamProjectPanel.setBackground(new Color(245, 240, 255));
 
-        JLabel titleLabel = new JLabel("Team Project");
+        JLabel titleLabel = new JLabel("Marketing Campaign Project");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setForeground(new Color(100, 50, 150));
@@ -464,7 +487,7 @@ public class ProjectManagementApp extends JFrame {
             CommandInvoker commandInvoker = new CommandInvoker();
             AddMemberCommand addMemberCommand = new AddMemberCommand(teamListModel);
             commandInvoker.setCommand(addMemberCommand);
-            commandInvoker.executeCommand();  // Execute the command to add a member
+            commandInvoker.executeCommand();  
         });
         teamPanel.add(addMemberButton, BorderLayout.SOUTH);
 
@@ -477,12 +500,12 @@ public class ProjectManagementApp extends JFrame {
         taskPanel.setBackground(new Color(245, 240, 255));
         taskPanel.setBorder(BorderFactory.createTitledBorder("Tasks"));
 
-        String[] columns = {"Task Name", "Description", "Subtasks"};
+        String[] columns = {"Task Name", "Description", "Subtasks", "Task Type"};
         DefaultTableModel model = new DefaultTableModel(columns, 0);
-        taskTable = new JTable(model);  // Only declare and initialize taskTable
+        taskTable = new JTable(model);
 
         taskTable.setRowSelectionAllowed(true);
-        taskTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  // Allow selecting only one row at a time
+        taskTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         taskTable.setFont(new Font("Arial", Font.PLAIN, 14));
         taskTable.setRowHeight(25);
@@ -494,6 +517,12 @@ public class ProjectManagementApp extends JFrame {
         JPanel taskButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         taskButtonPanel.setBackground(new Color(245, 240, 255));
 
+        // Task Type ComboBox
+        JComboBox<String> taskTypeComboBox = new JComboBox<>(new String[]{
+            "Content Creation", "Social Media Strategy", "Campaign Analytics"
+        });
+        taskButtonPanel.add(taskTypeComboBox);
+
         JButton addTaskButton = new JButton("Add Task");
         addTaskButton.setFont(new Font("Arial", Font.PLAIN, 16));
         addTaskButton.setBackground(new Color(120, 100, 160));
@@ -501,10 +530,11 @@ public class ProjectManagementApp extends JFrame {
         addTaskButton.setFocusPainted(false);
         addTaskButton.setEnabled(true);
 
-        //Command pattern for adding Task
+        // Command pattern for adding Task
         addTaskButton.addActionListener(e -> {
             CommandInvoker commandInvoker = new CommandInvoker();
-            commandInvoker.setCommand(new AddTaskCommand(model, project));
+            String selectedTaskType = (String) taskTypeComboBox.getSelectedItem();
+            commandInvoker.setCommand(new AddTaskCommand(model, project, selectedTaskType));
             commandInvoker.executeCommand();
         });
 
@@ -515,7 +545,7 @@ public class ProjectManagementApp extends JFrame {
         addSubtaskButton.setFocusPainted(false);
         addSubtaskButton.setEnabled(true);
 
-        //Command pattern for adding SubTask
+        // Command pattern for adding SubTask
         addSubtaskButton.addActionListener(e -> {
             EventQueue.invokeLater(() -> {
                 int selectedRow = taskTable.getSelectedRow();
@@ -551,11 +581,11 @@ public class ProjectManagementApp extends JFrame {
         cardLayout.show(mainPanel, "teamProjectScreen");
     }
 
-    private void showBudgetProjectPanel() {
+    private void ResearchProject() {
         JPanel budgetProjectPanel = new JPanel(new BorderLayout());
         budgetProjectPanel.setBackground(new Color(245, 240, 255));
 
-        JLabel titleLabel = new JLabel("Budget Project");
+        JLabel titleLabel = new JLabel("Research Project");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setForeground(new Color(100, 50, 150));
@@ -592,7 +622,7 @@ public class ProjectManagementApp extends JFrame {
             CommandInvoker commandInvoker = new CommandInvoker();
             AddMemberCommand addMemberCommand = new AddMemberCommand(teamListModel);
             commandInvoker.setCommand(addMemberCommand);
-            commandInvoker.executeCommand();  // Execute the command to add a member
+            commandInvoker.executeCommand();
         });
 
         teamPanel.add(addMemberButton, BorderLayout.SOUTH);
@@ -605,12 +635,12 @@ public class ProjectManagementApp extends JFrame {
         taskPanel.setBackground(new Color(245, 240, 255));
         taskPanel.setBorder(BorderFactory.createTitledBorder("Tasks"));
 
-        String[] columns = {"Task Name", "Description", "Subtasks"};
+        String[] columns = {"Task Name", "Description", "Subtasks", "Task Type"};
         DefaultTableModel model = new DefaultTableModel(columns, 0);
-        taskTable = new JTable(model);  // Only declare and initialize taskTable
+        taskTable = new JTable(model);
 
         taskTable.setRowSelectionAllowed(true);
-        taskTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  // Allow selecting only one row at a time
+        taskTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         taskTable.setFont(new Font("Arial", Font.PLAIN, 14));
         taskTable.setRowHeight(25);
         taskTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
@@ -621,6 +651,12 @@ public class ProjectManagementApp extends JFrame {
         JPanel taskButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         taskButtonPanel.setBackground(new Color(245, 240, 255));
 
+        // Task Type ComboBox
+        JComboBox<String> taskTypeComboBox = new JComboBox<>(new String[]{
+            "Data Collection", "Analysis", "Reporting"
+        });
+        taskButtonPanel.add(taskTypeComboBox);
+
         JButton addTaskButton = new JButton("Add Task");
         addTaskButton.setFont(new Font("Arial", Font.PLAIN, 16));
         addTaskButton.setBackground(new Color(150, 130, 190));
@@ -628,10 +664,11 @@ public class ProjectManagementApp extends JFrame {
         addTaskButton.setFocusPainted(false);
         addTaskButton.setEnabled(true);
 
-        //Command pattern for adding Task
+        // Command pattern for adding Task
         addTaskButton.addActionListener(e -> {
             CommandInvoker commandInvoker = new CommandInvoker();
-            commandInvoker.setCommand(new AddTaskCommand(model, project));
+            String selectedTaskType = (String) taskTypeComboBox.getSelectedItem();
+            commandInvoker.setCommand(new AddTaskCommand(model, project, selectedTaskType));
             commandInvoker.executeCommand();
         });
 
@@ -642,7 +679,7 @@ public class ProjectManagementApp extends JFrame {
         addSubtaskButton.setFocusPainted(false);
         addSubtaskButton.setEnabled(true);
 
-        //Command pattern for adding SubTask
+        // Command pattern for adding SubTask
         addSubtaskButton.addActionListener(e -> {
             EventQueue.invokeLater(() -> {
                 int selectedRow = taskTable.getSelectedRow();
@@ -663,26 +700,6 @@ public class ProjectManagementApp extends JFrame {
         taskPanel.add(taskButtonPanel, BorderLayout.SOUTH);
 
         contentPanel.add(taskPanel, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        gbc.weightx = 1.0;
-        gbc.weighty = 0.0;
-
-        JPanel budgetPanel = new JPanel();
-        budgetPanel.setBackground(new Color(245, 240, 255));
-        budgetPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-
-        JLabel budgetLabel = new JLabel("Project Budget:");
-        budgetLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        JTextField budgetField = new JTextField(10);
-        budgetField.setFont(new Font("Arial", Font.PLAIN, 16));
-
-        budgetPanel.add(budgetLabel);
-        budgetPanel.add(budgetField);
-
-        contentPanel.add(budgetPanel, gbc);
 
         budgetProjectPanel.add(contentPanel, BorderLayout.CENTER);
 
