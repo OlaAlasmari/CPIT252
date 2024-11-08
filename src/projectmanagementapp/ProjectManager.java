@@ -5,7 +5,11 @@ import java.util.List;
 
 public class ProjectManager {
 
-     private static List<Project> projects = new ArrayList<>();
+    private static List<Project> projects = new ArrayList<>();
+
+    public List<Project> getProjects() {
+        return projects;
+    }
 
     public static void createProject(String projectType) {
         Project project;
@@ -26,4 +30,7 @@ public class ProjectManager {
         System.out.println("Project created: " + project.getName());
     }
 
+
 }
+
+
