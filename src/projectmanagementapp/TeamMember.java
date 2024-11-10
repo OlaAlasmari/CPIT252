@@ -1,9 +1,17 @@
 package projectmanagementapp;
 
+import java.util.List;
+
 public class TeamMember {
 
     private String name;
     private String role;
+    private String email;
+    
+
+    public TeamMember(String email) {
+        this.email = email;
+    }
 
     public TeamMember(String name, String role) {
         this.name = name;
@@ -18,4 +26,7 @@ public class TeamMember {
         return role;
     }
 
+    public String getEmail() {
+        return email;
+    }
 }

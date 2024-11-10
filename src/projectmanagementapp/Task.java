@@ -12,7 +12,6 @@ public class Task {
     private String status;
     private String deadline;
     private List<String> subtasks;  
-
     public Task(String name, String description, String type, String deadline) {
         this.name = name;
         this.description = description;

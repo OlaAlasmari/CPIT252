@@ -9,10 +9,11 @@ public class Project {
     private String description;
     private String Type;
     private List<Task> tasks;
-    private double budget;
+    private List<TeamMember> members;
 
     public Project() {
         tasks = new ArrayList<>();
+        members = new ArrayList<>();
     }
 
     public Project(String name, String description) {
@@ -32,6 +33,10 @@ public class Project {
         tasks.add(task);
     }
 
+    public void addMember(TeamMember T) {
+        members.add(T);
+    }
+
     public List<Task> getTasks() {
         return tasks;
     }
@@ -44,13 +49,8 @@ public class Project {
         return name;
     }
 
-    public double getBudget() {
-        return budget;
-    }
-
     public String getDescription() {
         return description;
     }
-
 
 }

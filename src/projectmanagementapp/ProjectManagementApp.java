@@ -485,9 +485,9 @@ public class ProjectManagementApp extends JFrame {
         // Command pattern for adding member
         addMemberButton.addActionListener(e -> {
             CommandInvoker commandInvoker = new CommandInvoker();
-            AddMemberCommand addMemberCommand = new AddMemberCommand(teamListModel);
+            Command addMemberCommand = new AddMemberCommand(teamListModel, project);
             commandInvoker.setCommand(addMemberCommand);
-            commandInvoker.executeCommand();  
+            commandInvoker.executeCommand();
         });
         teamPanel.add(addMemberButton, BorderLayout.SOUTH);
 
@@ -620,7 +620,7 @@ public class ProjectManagementApp extends JFrame {
         // Command pattern for adding member
         addMemberButton.addActionListener(e -> {
             CommandInvoker commandInvoker = new CommandInvoker();
-            AddMemberCommand addMemberCommand = new AddMemberCommand(teamListModel);
+            Command addMemberCommand = new AddMemberCommand(teamListModel, project);
             commandInvoker.setCommand(addMemberCommand);
             commandInvoker.executeCommand();
         });
